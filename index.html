@@ -3,16 +3,178 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simple To-Do List</title>
+    <meta
+      name="description"
+      content="TaskMaster Pro - A powerful, installable to-do list application"
+    />
+    <meta name="theme-color" content="#4A6CFA" />
+    <title>TaskMaster Pro</title>
+    <link rel="manifest" href="manifest.json" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/5.5.2/collection/components/icon/icon.svg"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <link rel="stylesheet" href="style.css" />
+    <script>
+      // Register service worker for PWA functionality
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./service-worker.js")
+            .then((registration) => {
+              console.log(
+                "ServiceWorker registered with scope:",
+                registration.scope
+              );
+            })
+            .catch((error) => {
+              console.log("ServiceWorker registration failed:", error);
+            });
+        });
+      }
+    </script>
   </head>
   <body>
-    <div class="container">
-      <h1>To-Do List</h1>
-      <p class="warning">Enter a task todo below 👇🏽</p>
-      <input type="text" id="taskInput" placeholder="Add a new task..." />
-      <button id="addTaskButton">Add Task</button>
-      <ul id="taskList"></ul>
+    <div class="app-container">
+      <!-- App Header -->
+      <header>
+        <div class="logo">
+          <i class="fas fa-check-circle"></i>
+          <h1>TaskMaster Pro</h1>
+        </div>
+        <button id="installButton" class="install-button">
+          <i class="fas fa-download"></i> Install App
+        </button>
+      </header>
+
+      <!-- Main Content -->
+      <main>
+        <div class="sidebar">
+          <div class="user-profile">
+            <div class="avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <p>Hello, User!</p>
+          </div>
+          <nav>
+            <ul>
+              <li class="active" data-filter="all">
+                <i class="fas fa-list"></i> All Tasks
+              </li>
+              <li data-filter="today">
+                <i class="fas fa-calendar-day"></i> Today
+              </li>
+              <li data-filter="upcoming">
+                <i class="fas fa-calendar-week"></i> Upcoming
+              </li>
+              <li data-filter="completed">
+                <i class="fas fa-check-double"></i> Completed
+              </li>
+            </ul>
+          </nav>
+          <div class="stats">
+            <div class="stat-item">
+              <span id="totalTasks">0</span>
+              <p>Total Tasks</p>
+            </div>
+            <div class="stat-item">
+              <span id="completedTasks">0</span>
+              <p>Completed</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="search-container">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search tasks..."
+              />
+            </div>
+            <button id="themeToggle" class="theme-toggle">
+              <i class="fas fa-moon"></i>
+            </button>
+          </div>
+
+          <div class="task-input-container">
+            <input type="text" id="taskInput" placeholder="Add a new task..." />
+            <input type="date" id="taskDate" />
+            <select id="taskPriority">
+              <option value="low">Low Priority</option>
+              <option value="medium" selected>Medium Priority</option>
+              <option value="high">High Priority</option>
+            </select>
+            <button id="addTaskButton">
+              <i class="fas fa-plus"></i> Add Task
+            </button>
+          </div>
+
+          <div class="tasks-container">
+            <h2 id="currentFilter">All Tasks</h2>
+            <div class="task-list-container">
+              <ul id="taskList"></ul>
+              <div id="emptyState" class="empty-state">
+                <i class="fas fa-tasks"></i>
+                <p>No tasks yet. Add a new task to get started!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Task Details Modal -->
+      <div id="taskModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Task Details</h2>
+            <span class="close-modal">&times;</span>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="modalTaskTitle">Task Title</label>
+              <input type="text" id="modalTaskTitle" placeholder="Task title" />
+            </div>
+            <div class="form-group">
+              <label for="modalTaskDate">Due Date</label>
+              <input type="date" id="modalTaskDate" />
+            </div>
+            <div class="form-group">
+              <label for="modalTaskPriority">Priority</label>
+              <select id="modalTaskPriority">
+                <option value="low">Low Priority</option>
+                <option value="medium">Medium Priority</option>
+                <option value="high">High Priority</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="modalTaskNotes">Notes</label>
+              <textarea
+                id="modalTaskNotes"
+                placeholder="Add notes about this task..."
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="deleteTaskBtn" class="delete-btn">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+            <button id="saveTaskBtn" class="save-btn">
+              <i class="fas fa-save"></i> Save
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast Notification -->
+      <div id="toast" class="toast"></div>
     </div>
 
     <script src="script.js"></script>
